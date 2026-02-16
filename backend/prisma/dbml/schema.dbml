@@ -1,0 +1,473 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table users {
+  id String [pk]
+  name String [not null]
+  emailInst String [unique, not null]
+  username String [unique, not null]
+  password String [not null]
+  RA Int [unique, not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  avatar String
+  bio String
+  banner String
+  lastSeen DateTime [default: `now()`, not null]
+  verified Boolean [not null, default: false]
+  courseId String [not null]
+  course courses [not null]
+  friends friendships [not null]
+  friendWith friendships [not null]
+  post posts [not null]
+  reply replies [not null]
+  like likes [not null]
+  media medias [not null]
+  notifcationObject notification_objects [not null]
+  notification notifications [not null]
+  replyId String
+  postId String
+  mentions Mentions [not null]
+  notificationSetting notification_settings [not null]
+  refreshToken refresh_tokens [not null]
+  emailToken email_tokens [not null]
+  Message messages [not null]
+  MessageStatus message_status [not null]
+  chat chats [not null]
+  chatUser chat_users [not null]
+  userAction chat_actions [not null]
+  authorAction chat_actions [not null]
+  assignments assignments [not null]
+  assignmentsUsers assignments_users [not null]
+  assignmentsTasks assignments_tasks [not null]
+}
+
+Table refresh_tokens {
+  id String [pk]
+  userId String [not null]
+  token String [unique, not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  user users [not null]
+}
+
+Table email_tokens {
+  id String [pk]
+  userId String [unique, not null]
+  token String [unique, not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  user users [not null]
+}
+
+Table chats {
+  id String [pk]
+  name String [not null]
+  ownerId String [not null]
+  type ChatType [not null, default: 'PRIVATE']
+  isDirect Boolean [not null, default: true]
+  icon String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  owner users [not null]
+  message messages [not null]
+  chatUser chat_users [not null]
+  chatActions chat_actions [not null]
+  assignments assignments [not null]
+}
+
+Table assignments {
+  id String [pk]
+  name String [not null]
+  ownerId String [not null]
+  owner users [not null]
+  chatId String
+  chat chats
+  assignmentsUsers assignments_users [not null]
+  notificationObject notification_objects [not null]
+  icon String
+  createdAt DateTime [default: `now()`, not null]
+  assignmentsTasks assignments_tasks [not null]
+}
+
+Table assignments_users {
+  id String [pk]
+  userId String [not null]
+  assignmentId String [not null]
+  isAdmin Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  user users [not null]
+  assignment assignments [not null]
+  AssignmentsTasksUsers assignments_tasks_users [not null]
+  assignmentsTasksFiles assignments_tasks_files [not null]
+}
+
+Table assignments_tasks {
+  id String [pk]
+  name String [not null]
+  assignmentId String [not null]
+  ownerId String [not null]
+  description String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  dueDate DateTime
+  assignment assignments [not null]
+  owner users [not null]
+  assignmentsTasksUsers assignments_tasks_users [not null]
+  assignmentsTasksFiles assignments_tasks_files [not null]
+  NotificationObject notification_objects [not null]
+}
+
+Table assignments_tasks_users {
+  id String [pk]
+  taskId String [not null]
+  userId String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  completed Boolean [not null, default: false]
+  updatedAt DateTime [not null]
+  task assignments_tasks [not null]
+  user assignments_users [not null]
+}
+
+Table assignments_tasks_files {
+  id String [pk]
+  taskId String [not null]
+  userId String [not null]
+  url String [not null]
+  filename String [not null]
+  type String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  task assignments_tasks [not null]
+  user assignments_users [not null]
+}
+
+Table chat_users {
+  id String [pk]
+  userId String [not null]
+  chatId String [not null]
+  isAdmin Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  user users [not null]
+  chat chats [not null]
+}
+
+Table messages {
+  id String [pk]
+  userId String [not null]
+  chatId String
+  content String
+  hasMedia Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  isRead Boolean [not null, default: false]
+  user users [not null]
+  messageStatus message_status [not null]
+  chat chats
+  media medias [not null]
+}
+
+Table message_status {
+  id String [pk]
+  messageId String [not null]
+  userId String [not null]
+  status MessageStatusEnum [not null, default: 'UNREAD']
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  message messages [not null]
+  user users [not null]
+}
+
+Table chat_actions {
+  id String [pk]
+  chatId String [not null]
+  userId String [not null]
+  action ChatActionsEnum [not null]
+  message String
+  actionAuthorId String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  user users [not null]
+  chat chats [not null]
+  actionAuthor users
+}
+
+Table courses {
+  id String [pk]
+  name String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  user users [not null]
+}
+
+Table friendships {
+  id String [pk]
+  userId String [not null]
+  friendId String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  accepted Boolean [not null, default: false]
+  user users [not null]
+  friend users [not null]
+  notificationObject notification_objects
+}
+
+Table posts {
+  id String [pk]
+  userId String [not null]
+  content String
+  parentId String
+  createdAt DateTime [default: `now()`, not null]
+  isShared Boolean [not null, default: false]
+  updatedAt DateTime [not null]
+  hasMedia Boolean [not null, default: false]
+  user users [not null]
+  reply replies [not null]
+  like likes [not null]
+  media medias [not null]
+  parent posts
+  posts posts [not null]
+  mentions Mentions [not null]
+  notificationSetting notification_settings [not null]
+  notificationObject notification_objects [not null]
+}
+
+Table replies {
+  id String [pk]
+  userId String [not null]
+  postId String [not null]
+  parentId String
+  content String
+  hasMedia Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  user users [not null]
+  post posts [not null]
+  media medias [not null]
+  like likes [not null]
+  parent replies
+  replies replies [not null]
+  mentions Mentions [not null]
+  notificationObject notification_objects [not null]
+}
+
+Table Mentions {
+  id String [pk]
+  userId String [not null]
+  postId String
+  replyId String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  user users [not null]
+  post posts
+  reply replies
+}
+
+Table likes {
+  id String [pk]
+  userId String [not null]
+  postId String
+  replyId String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  user users [not null]
+  post posts
+  reply replies
+}
+
+Table medias {
+  id String [pk]
+  postId String
+  replyId String
+  userId String [not null]
+  messageId String
+  url String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  user users [not null]
+  post posts
+  reply replies
+  message messages
+  shareId String
+}
+
+Table notification_types {
+  id Int [pk, increment]
+  name String [not null]
+  defaultMessage String
+  notifcationObject notification_objects [not null]
+}
+
+Table notification_objects {
+  id String [pk]
+  typeId Int [not null]
+  emitterId String [not null]
+  message String
+  postId String
+  replyId String
+  friendshipId String [unique]
+  assignmentId String
+  taskId String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  type notification_types [not null]
+  emitter users [not null]
+  notification notifications [not null]
+  post posts
+  reply replies
+  friendship friendships
+  assignment assignments
+  task assignments_tasks
+}
+
+Table notifications {
+  id String [pk]
+  receiverId String [not null]
+  notificationObjectId String [not null]
+  status NotificationStatus [not null, default: 'UNREAD']
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  receiver users [not null]
+  notificationObject notification_objects [not null]
+}
+
+Table notification_settings {
+  id String [pk]
+  userId String [not null]
+  postId String [not null]
+  enabled Boolean [not null, default: true]
+  user users [not null]
+  post posts [not null]
+}
+
+Enum ChatType {
+  PRIVATE
+  PUBLIC
+}
+
+Enum MessageStatusEnum {
+  READ
+  UNREAD
+}
+
+Enum ChatActionsEnum {
+  JOIN
+  LEAVE
+  ADD
+  REMOVE
+  USER_ROLE_UPDATE
+  CHAT_UPDATE
+  ASSIGNMENT_LINK
+  ASSIGNMENT_UNLINK
+  CREATE
+  DELETE
+}
+
+Enum NotificationStatus {
+  READ
+  UNREAD
+}
+
+Ref: users.courseId > courses.id
+
+Ref: refresh_tokens.userId > users.id [delete: Cascade]
+
+Ref: email_tokens.userId > users.id [delete: Cascade]
+
+Ref: chats.ownerId > users.id [delete: Cascade]
+
+Ref: assignments.ownerId > users.id [delete: Cascade]
+
+Ref: assignments.chatId > chats.id [delete: Cascade]
+
+Ref: assignments_users.userId > users.id [delete: Cascade]
+
+Ref: assignments_users.assignmentId > assignments.id [delete: Cascade]
+
+Ref: assignments_tasks.assignmentId > assignments.id [delete: Cascade]
+
+Ref: assignments_tasks.ownerId > users.id [delete: Cascade]
+
+Ref: assignments_tasks_users.taskId > assignments_tasks.id [delete: Cascade]
+
+Ref: assignments_tasks_users.userId > assignments_users.id [delete: Cascade]
+
+Ref: assignments_tasks_files.taskId > assignments_tasks.id [delete: Cascade]
+
+Ref: assignments_tasks_files.userId > assignments_users.id [delete: Cascade]
+
+Ref: chat_users.userId > users.id [delete: Cascade]
+
+Ref: chat_users.chatId > chats.id [delete: Cascade]
+
+Ref: messages.userId > users.id [delete: Cascade]
+
+Ref: messages.chatId > chats.id
+
+Ref: message_status.messageId > messages.id [delete: Cascade]
+
+Ref: message_status.userId > users.id [delete: Cascade]
+
+Ref: chat_actions.userId > users.id [delete: Cascade]
+
+Ref: chat_actions.chatId > chats.id [delete: Cascade]
+
+Ref: chat_actions.actionAuthorId > users.id [delete: Cascade]
+
+Ref: friendships.userId > users.id [delete: Cascade]
+
+Ref: friendships.friendId > users.id [delete: Cascade]
+
+Ref: posts.userId > users.id [delete: Cascade]
+
+Ref: posts.parentId - posts.id
+
+Ref: replies.userId > users.id [delete: Cascade]
+
+Ref: replies.postId > posts.id [delete: Cascade]
+
+Ref: replies.parentId - replies.id
+
+Ref: Mentions.userId > users.id [delete: Cascade]
+
+Ref: Mentions.postId > posts.id [delete: Cascade]
+
+Ref: Mentions.replyId > replies.id [delete: Cascade]
+
+Ref: likes.userId > users.id [delete: Cascade]
+
+Ref: likes.postId > posts.id [delete: Cascade]
+
+Ref: likes.replyId > replies.id [delete: Cascade]
+
+Ref: medias.userId > users.id [delete: Cascade]
+
+Ref: medias.postId > posts.id [delete: Cascade]
+
+Ref: medias.replyId > replies.id [delete: Cascade]
+
+Ref: medias.messageId > messages.id [delete: Cascade]
+
+Ref: notification_objects.typeId > notification_types.id [delete: Cascade]
+
+Ref: notification_objects.emitterId > users.id [delete: Cascade]
+
+Ref: notification_objects.postId > posts.id [delete: Cascade]
+
+Ref: notification_objects.replyId > replies.id [delete: Cascade]
+
+Ref: notification_objects.friendshipId - friendships.id [delete: Cascade]
+
+Ref: notification_objects.assignmentId > assignments.id [delete: Cascade]
+
+Ref: notification_objects.taskId > assignments_tasks.id [delete: Cascade]
+
+Ref: notifications.receiverId > users.id
+
+Ref: notifications.notificationObjectId > notification_objects.id [delete: Cascade]
+
+Ref: notification_settings.userId > users.id [delete: Cascade]
+
+Ref: notification_settings.postId > posts.id [delete: Cascade]

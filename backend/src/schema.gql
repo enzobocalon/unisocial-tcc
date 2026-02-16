@@ -1,0 +1,852 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Actions {
+  author: BaseUser
+  createdAt: DateTime!
+  id: String
+  type: String!
+  updatedAt: DateTime!
+}
+
+input AddUserDTO {
+  chatId: String!
+  userToAddId: [String!]
+}
+
+type AlphabeticalFriendsResponse {
+  data: JSON!
+  hasNextPage: Boolean!
+}
+
+type Assignment {
+  chatId: String
+  createdAt: String!
+  icon: String
+  id: String!
+  isAdmin: Boolean
+  media: Media
+  name: String!
+  ownerId: String!
+  users: [BaseUser!]
+}
+
+type AssignmentFriend {
+  friends: [BaseUserExtended!]!
+  letter: String!
+}
+
+type AssignmentFriends {
+  count: Int!
+  data: [AssignmentFriend!]!
+  hasNextPage: Boolean!
+}
+
+type AssignmentList {
+  dueDate: DateTime!
+  item: [AssignmentListItem!]!
+}
+
+type AssignmentListItem {
+  description: String
+  dueDate: String!
+  icon: String
+  id: String!
+  isPending: Boolean!
+  name: String!
+  pendingCount: Int
+}
+
+type AssignmentSub {
+  action: String
+  assignment: Assignment!
+  member: AssignmentsUsers
+}
+
+type AssignmentTask {
+  assignmentId: String!
+  completed: Boolean!
+  completedCount: Int!
+  createdAt: DateTime!
+  description: String
+  dueDate: DateTime
+  files: [TaskFiles!]!
+  id: String!
+  isMember: Boolean!
+  name: String!
+  owner: BaseUser!
+  ownerId: String!
+  totalCount: Int!
+}
+
+type AssignmentUserSub {
+  action: String
+  assignment: Assignment!
+  member: AssignmentsUsers
+}
+
+type AssignmentsUsers {
+  assignment: Assignment
+  assignmentId: String!
+  id: String!
+  isAdmin: Boolean!
+  user: BaseUser!
+  userId: String!
+}
+
+type BaseUser {
+  avatar: String
+  banner: String
+  bio: String
+  course: Course
+  courseId: String
+  friendsCount: Float
+  friendship: Friendship
+  id: String!
+  name: String!
+  username: String!
+}
+
+type BaseUserExtended {
+  avatar: String
+  banner: String
+  bio: String
+  course: Course
+  courseId: String
+  friendsCount: Float
+  friendship: Friendship
+  id: String!
+  isMember: Boolean!
+  name: String!
+  username: String!
+}
+
+type Chat {
+  createdAt: String!
+  directUserMember: String
+  icon: String
+  id: String!
+  isAdmin: Boolean
+  isDirect: Boolean!
+  isOnline: Boolean
+  name: String!
+  ownerId: String
+  type: ChatType!
+  unreadMessages: Int
+}
+
+type ChatActionEntity {
+  action: String!
+  actionAuthor: BaseUser!
+  actionType: ChatActionEnum
+  chatId: String!
+  createdAt: String!
+  id: String!
+  message: String
+  user: CustomChatBaseUser
+}
+
+enum ChatActionEnum {
+  ADD
+  ASSIGNMENT_LINK
+  ASSIGNMENT_UNLINK
+  CHAT_UPDATE
+  CREATE
+  DELETE
+  JOIN
+  LEAVE
+  REMOVE
+  USER_ROLE_UPDATE
+}
+
+type ChatContent {
+  action: ContentAction
+  author: BaseUser!
+  createdAt: DateTime!
+  id: String!
+  message: ContentMessage
+  system: Boolean!
+}
+
+type ChatFriend {
+  friends: [BaseUserExtended!]!
+  letter: String!
+}
+
+type ChatFriends {
+  count: Int!
+  data: [ChatFriend!]!
+  hasNextPage: Boolean!
+}
+
+type ChatMember {
+  id: String!
+  isAdmin: Boolean!
+  user: BaseUser!
+}
+
+type ChatMessageSub {
+  chat: Chat!
+  chatAction: ChatActionEntity
+  message: Message
+}
+
+enum ChatType {
+  PRIVATE
+  PUBLIC
+}
+
+type ContentAction {
+  action: String!
+  message: String
+  user: BaseUser!
+}
+
+type ContentMedia {
+  urls: [String]
+}
+
+type ContentMessage {
+  content: String!
+  hasMedia: Boolean!
+  media: ContentMedia
+}
+
+type Course {
+  id: String!
+  name: String!
+}
+
+input CreateAssignmentDTO {
+  icon: String
+  name: String!
+  usersIds: [String!]
+}
+
+input CreateAssignmentTaskDTO {
+  assignmentId: String!
+  description: String
+  dueDate: DateTime
+  name: String!
+  users: [String!]
+}
+
+input CreateChatDTO {
+  icon: String
+  isDirect: Boolean!
+  name: String
+  type: ChatType!
+  users: [String!]
+}
+
+input CreateFriendshipDTO {
+  friendId: String!
+}
+
+input CreateMessageDTO {
+  assignmentId: String
+  chatId: String
+  content: String
+  medias: [String!]
+}
+
+input CreatePostDTO {
+  content: String
+  medias: [String!]
+}
+
+input CreateRemoveUserAssignmentDTO {
+  assignmentId: String!
+  userIdToRemove: String
+  usersIds: [String!]
+}
+
+input CreateReplyDTO {
+  content: String
+  medias: [String!]
+  parentId: String
+  postId: String!
+}
+
+input CreateShareDTO {
+  content: String
+  medias: [String!]
+  parentId: String!
+}
+
+type CustomChatBaseUser {
+  avatar: String
+  banner: String
+  bio: String
+  course: Course
+  courseId: String
+  friendsCount: Float
+  friendship: Friendship
+  id: String!
+  isAdmin: Boolean
+  name: String!
+  username: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type FileUser {
+  id: String!
+  user: BaseUser!
+}
+
+type Friendship {
+  friendId: String!
+  id: String!
+  status: FriendshipStatusEnum!
+  userId: String!
+}
+
+enum FriendshipStatusEnum {
+  ACCEPTED
+  BLOCKED
+  NONE
+  RECEIVED
+  SENT
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type LikeWithCount {
+  count: Int!
+  like: [BaseUser!]!
+}
+
+type Media {
+  id: String!
+  messageId: String
+  postId: String
+  replyId: String
+  shareId: String
+  url: String!
+}
+
+"""Origem da mídia"""
+enum MediaSource {
+  DEFAULT
+  DOC
+  IMAGE_ONLY
+}
+
+type Mention {
+  user: BaseUser!
+}
+
+type Message {
+  content: String!
+  createdAt: String!
+  deletedAt: String
+  hasMedia: Boolean!
+  id: String!
+  media: [Media!]
+  messageStatus: [MessageStatus!]
+  user: BaseUser!
+}
+
+type MessageStatus {
+  messageId: String!
+  status: MessageStatusEnum!
+  user: BaseUser!
+  userId: String!
+}
+
+enum MessageStatusEnum {
+  READ
+  UNREAD
+}
+
+type MessageUpdateStatus {
+  chatId: String!
+  id: String!
+}
+
+type Mutation {
+  """Accept a friendship"""
+  acceptFriendship(id: String!): ResponseEntity!
+  addUserToAssignment(data: CreateRemoveUserAssignmentDTO!): ResponseEntity!
+  addUserToChat(data: AddUserDTO!): Chat!
+  addUsersToTask(data: UserTaskDTO!): ResponseEntity!
+  changeUserRole(data: UpdateChatUserDTO!): ResponseEntity!
+  createAssignment(data: CreateAssignmentDTO!): Assignment!
+  createAssignmentTask(data: CreateAssignmentTaskDTO!): AssignmentTask!
+  createChat(data: CreateChatDTO!): Chat!
+
+  """Create a new friendship"""
+  createFriendship(data: CreateFriendshipDTO!): ResponseEntity!
+
+  """Create a new post"""
+  createPost(data: CreatePostDTO!): Post!
+
+  """Create a reply"""
+  createReply(data: CreateReplyDTO!): Reply!
+  deleteAssignment(assignmentId: String!): ResponseEntity!
+  deleteAssignmentTask(taskId: String!): ResponseEntity!
+  deleteFile(fileUrl: String!, taskId: String!): ResponseEntity!
+
+  """Delete a friendship"""
+  deleteFriendship(id: String!): ResponseEntity!
+  deleteMessage(chatId: String!, messageId: String!): ResponseEntity!
+
+  """Delete a reply"""
+  deleteReply(id: String!): ResponseEntity!
+
+  """Disable notifications from a post"""
+  disableNotifications(postId: String!): ResponseEntity!
+
+  """Enable notifications from a post"""
+  enableNotifications(postId: String!): ResponseEntity!
+  generatePresignedUrls(data: [UrlRequestDTO!]!): [PresignedUrl!]!
+  invalidateTracking: Tracking!
+  joinChat(chatId: String!): Chat!
+  leaveAssignment(assignmentId: String!): ResponseEntity!
+  leaveChat(data: RemoveUserDTO!): Chat!
+  leaveTask(taskId: String!): ResponseEntity!
+
+  """Like a post"""
+  likePost(entity: String!, id: String!): ResponseEntity!
+  linkChatToAssignment(assignmentId: String!, chatId: String!): ResponseEntity!
+  removePost(id: String!): Post!
+  removeUserFromAssignment(data: CreateRemoveUserAssignmentDTO!): ResponseEntity!
+  removeUserFromChat(data: RemoveUserDTO!): Chat!
+  removeUsersFromTask(data: UserTaskDTO!): ResponseEntity!
+  searchChatFriends(chatId: String!, page: Float!, query: String!): ChatFriends!
+  searchFilesByUser(page: Float!, query: String!, taskId: String!): [TaskAllFiles!]!
+
+  """Search friends by name from active user sorted by alphabetical order"""
+  searchFriendsAlphabetically(page: Float!, value: String!): AlphabeticalFriendsResponse!
+  sendMessage(data: CreateMessageDTO!): Message!
+  sendTrackingData(data: TrackingDataDto!): Tracking!
+  share(data: CreateShareDTO!): Post!
+
+  """Returns a JWT Token"""
+  signin(data: SigninDTO!): Token!
+
+  """Create a new user and returns a JWT"""
+  signup(data: SignupDTO!): ResponseEntity!
+  tagTaskAsCompleted(taskId: String!): ResponseEntity!
+  transferAssignmentOwnership(assignmentId: String!, userId: String!): ResponseEntity!
+  transferOwnership(chatId: String!, userId: String!): Chat!
+
+  """Unlike a post"""
+  unlikePost(entity: String!, id: String!): ResponseEntity!
+  unlinkChatAndAssignment(assignmentId: String!, chatId: String!): ResponseEntity!
+  unshare(postId: String!): ResponseEntity!
+  updateAssignment(data: UpdateAssignmentDTO!): Assignment!
+  updateAssignmentTask(data: UpdateAssignmentTaskDTO!): AssignmentTask!
+  updateChatSettings(data: UpdateChatDTO!): Chat!
+  updateMessagesStatus(chatId: String!): ResponseEntity!
+
+  """Update a post"""
+  updatePost(updatePost: UpdatePostDTO!): Post!
+  updateProfile(data: UpdateProfileDTO!): BaseUser!
+
+  """Update a reply"""
+  updateReply(data: UpdateReplyDTO!): Reply!
+  updateUser(data: UpdateUserDTO!): BaseUser!
+  updateUserRoleInAssignment(data: UpdateUserAssignmentDTO!): ResponseEntity!
+  uploadFiles(data: UploadFileToTaskDTO!): ResponseEntity!
+}
+
+type Notification {
+  assignmentId: String
+  createdAt: String!
+  emitters: [BaseUser!]!
+  friendshipId: String
+  id: String!
+  message: String!
+  post: Post
+  postId: String
+  reply: Reply
+  replyId: String
+  status: NotificationStatus!
+  taskId: String
+  type: NotificationType!
+  typeId: Int!
+}
+
+enum NotificationStatus {
+  READ
+  UNREAD
+}
+
+type NotificationType {
+  defaultMessage: String!
+  name: String!
+}
+
+type Parent {
+  content: String
+  createdAt: DateTime!
+  hasMedia: Boolean!
+  id: String!
+  media: [Media!]
+  mentions: [Mention!]
+  updatedAt: DateTime!
+  user: BaseUser!
+}
+
+type Post {
+  actions: [Actions!]
+  content: String
+  createdAt: DateTime!
+  hasMedia: Boolean!
+  id: String!
+  isShared: Boolean!
+  key: String
+  liked: Boolean!
+  likes: Int!
+  media: [Media!]
+  mentions: [Mention!]
+  parent: Parent
+  parentId: String
+  replies: Int!
+  shared: Boolean!
+  shares: Int!
+  updatedAt: DateTime!
+  user: BaseUser!
+}
+
+type PresignedUrl {
+  fileUrl: String!
+  filename: String!
+  type: String!
+  uploadUrl: String!
+}
+
+type Query {
+  canNavigateBetweenAssignmentAndChat(assignmentId: String!, chatId: String!): ResponseEntity!
+  findPostMediaByUserId(id: String!, page: Float!): [Post!]!
+  getAddableUsers(assignmentId: String!, page: Float!, taskId: String!): TaskAddableUsersResponse!
+  getAllChats(page: Float!): [ChatMessageSub!]!
+  getAllFilesByTaskId(page: Float!, taskId: String!): [TaskAllFiles!]!
+
+  """Get all friends from active user"""
+  getAllFriends(page: Float!): [BaseUser!]!
+
+  """Get all friends from active user sorted by alphabetical order"""
+  getAllFriendsAlphabetically(page: Float!): AlphabeticalFriendsResponse!
+
+  """Get all online friends from active user"""
+  getAllOnlineFriends: [BaseUser!]!
+  getAllTasksByAssignmentId(assignmentId: String!, page: Float!): [AssignmentList!]!
+  getAssignmentById(assignmentId: String!): Assignment!
+  getAssignmentFriends(assignmentId: String!, page: Float!): AssignmentFriends!
+  getAssignmentUsers(assignmentId: String!, page: Float!): [AssignmentsUsers!]!
+  getAssignments(page: Float!): [AssignmentList!]!
+  getCategorizedTaskUsers(assignmentId: String!, page: Float!): TaskAddableUsersResponse!
+  getChatActions(chatId: String!, page: Float!): [ChatActionEntity!]!
+  getChatById(chatId: String!): Chat!
+  getChatByUserMember(userId: String!): Chat!
+  getChatFriends(chatId: String!, page: Float!): ChatFriends!
+  getChatMembers(chatId: String!, page: Float!): [ChatMember!]!
+  getChatMessages(chatId: String!, page: Float!): [ChatContent!]!
+
+  """Get children replies for a reply"""
+  getChildrenReplies(page: Float!, parentId: String!, postId: String!): [Reply!]!
+  getCourses: [Course!]!
+  getFriendRequestStatus(id: String!): FriendshipStatusEnum!
+
+  """Get all friend requests from active user"""
+  getFriendRequests(page: Float!): [Notification!]!
+
+  """Get all likes by post id"""
+  getLikeByPostId(id: String!, page: Float!): LikeWithCount!
+  getLinkableChats(assignmentId: String!, page: Float!): [Chat!]!
+  getMentionableUsers(content: String!): [BaseUser!]!
+
+  """Get all notifications from active user"""
+  getNotifications(page: Float!): [Notification!]!
+
+  """Find a post by userId"""
+  getPostByUserId(getShare: Boolean, id: String!, page: Float!): [Post!]!
+  getPostLikesByUserId(id: String!, page: Float!): [Post!]!
+  getShareByPostId(page: Float!, postId: String!): ShareListWithCount!
+  getTask(taskId: String!): AssignmentTask!
+  getTaskMembers(page: Float!, taskId: String!): [TaskMember!]!
+  getTrackingData: [Tracking!]!
+  getUserProfile(id: String!): BaseUser!
+  getUsersById(ids: [String!]!, page: Float!): [BaseUser!]!
+  getUsersTaskByAssignmentId(assignmentId: String!, page: Float!): [AssignmentList!]!
+  heartbeat: ResponseEntity!
+  me: BaseUser!
+
+  """Find a post by id"""
+  postById(id: String!): Post!
+
+  """Returns a new JWT Token"""
+  refreshToken(refreshToken: String!): Token!
+
+  """Get replies for a post"""
+  replies(id: String!, page: Float!): [Reply!]!
+  search(page: Float!, query: String!): SearchResult!
+  searchAddableUsers(assignmentId: String!, page: Float!, query: String!, taskId: String!): TaskAddableUsersResponse!
+  searchAssignmentFriends(assignmentId: String!, page: Float!, query: String!): AssignmentFriends!
+  searchUsers(page: Float!, query: String!): [BaseUser!]!
+  testNotification: Notification!
+  timeline(page: Float): [Post!]!
+  timelineByCourse(page: Float!): [Post!]!
+
+  """Get all unread notifications count"""
+  unreadNotifications: Int!
+}
+
+input RemoveUserDTO {
+  chatId: String!
+  userToRemoveId: String
+}
+
+type Reply {
+  content: String
+  createdAt: DateTime!
+  id: String!
+  liked: Boolean!
+  likes: Int!
+  medias: [Media!]
+  mentions: [BaseUser!]
+  parentId: String
+  postId: String!
+  replies: Int!
+  user: BaseUser!
+}
+
+type ResponseEntity {
+  """Any type of complementary data to this specific response."""
+  compl_data: String
+  message: String
+  success: Boolean!
+}
+
+type SearchResult {
+  posts: [Post!]
+  users: [BaseUser!]
+}
+
+type ShareListEntity {
+  id: String!
+  user: BaseUser!
+}
+
+type ShareListWithCount {
+  count: Int!
+  share: [ShareListEntity!]!
+}
+
+input SigninDTO {
+  email: String!
+  password: String!
+}
+
+input SignupDTO {
+  RA: Int!
+  courseId: String!
+  email: String!
+  name: String!
+  password: String!
+  username: String!
+}
+
+type Subscription {
+  activeChat(chatId: String!): ChatMessageSub!
+  assignmentMember(assignmentId: String!): AssignmentUserSub!
+  assignments: AssignmentSub!
+  chats: ChatMessageSub!
+
+  """Subscribes to friends status socket"""
+  friendStatus: UserStatus!
+  message(messageId: String!): ChatMessageSub!
+  messageStatus: MessageUpdateStatus!
+
+  """Subscribes to notifications socket"""
+  notifications: Notification!
+  tasks: TaskSub!
+  tracking: Tracking!
+
+  """Send user current status (online/offline)"""
+  userStatus: BaseUser!
+}
+
+type TaskAddableUser {
+  id: String!
+  isMember: Boolean
+  user: BaseUser!
+  userId: String!
+}
+
+type TaskAddableUsers {
+  friends: [TaskAddableUser!]!
+  letter: String!
+}
+
+type TaskAddableUsersResponse {
+  count: Int!
+  data: [TaskAddableUsers!]!
+  hasNextPage: Boolean!
+}
+
+type TaskAllFiles {
+  files: [TaskFiles!]!
+  user: FileUser!
+}
+
+type TaskFiles {
+  filename: String!
+  id: String!
+  taskId: String!
+  type: String!
+  url: String!
+  userId: String!
+}
+
+type TaskMember {
+  completed: Boolean!
+  id: String!
+  user: BaseUser!
+  userId: String!
+}
+
+type TaskSub {
+  action: String!
+  assignment: Assignment!
+  ids: [TaskUsersIds!]
+  task: AssignmentTask!
+}
+
+type TaskUsersIds {
+  id: String!
+  userId: String!
+}
+
+type Token {
+  refreshToken: String!
+  token: String!
+}
+
+type Tracking {
+  avatar: String
+  banner: String
+  bio: String
+  building: String
+  course: Course
+  courseId: String
+  friendsCount: Float
+  friendship: Friendship
+  id: String!
+  latitude: Float!
+  longitude: Float!
+  name: String!
+  username: String!
+}
+
+input TrackingDataDto {
+  latitude: Float!
+  longitude: Float!
+}
+
+input UpdateAssignmentDTO {
+  icon: String
+  id: String!
+  name: String
+}
+
+input UpdateAssignmentTaskDTO {
+  description: String
+  dueDate: DateTime
+  name: String
+  taskId: String!
+}
+
+input UpdateChatDTO {
+  chatId: String!
+  icon: String
+  name: String
+  type: ChatType
+}
+
+input UpdateChatUserDTO {
+  chatId: String!
+  isAdmin: Boolean!
+  userToUpdateId: String
+}
+
+input UpdatePostDTO {
+  content: String
+  id: String!
+  medias: [String!]
+}
+
+input UpdateProfileDTO {
+  avatar: String
+  banner: String
+  bio: String
+  courseId: String
+  name: String
+}
+
+input UpdateReplyDTO {
+  content: String
+  id: String!
+  medias: [String!]
+  parentId: String
+  postId: String
+}
+
+input UpdateUserAssignmentDTO {
+  assignmentId: String!
+  isAdmin: Boolean!
+  userId: String!
+}
+
+input UpdateUserDTO {
+  confirmPassword: String
+  currentPassword: String
+  password: String
+  username: String
+}
+
+input UploadFileToTaskDTO {
+  files: [UploadTaskItem!]!
+  taskId: String!
+}
+
+input UploadTaskItem {
+  filename: String!
+  type: String!
+  url: String!
+}
+
+input UrlRequestDTO {
+  name: String!
+  source: MediaSource!
+  type: String!
+}
+
+type UserStatus {
+  avatar: String
+  banner: String
+  bio: String
+  course: Course
+  courseId: String
+  friendsCount: Float
+  friendship: Friendship
+  id: String!
+  name: String!
+  online: Boolean!
+  username: String!
+}
+
+input UserTaskDTO {
+  taskId: String!
+  userIds: [String!]!
+}

@@ -1,0 +1,438 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  emailInst String   @unique @map("email_inst")
+  username  String   @unique
+  password  String
+  RA        Int      @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  avatar    String?
+  bio       String?
+  banner    String?
+  lastSeen  DateTime @default(now()) @map("last_seen")
+  verified  Boolean  @default(false)
+  courseId  String   @map("course_id")
+
+  course              Course                @relation(fields: [courseId], references: [id])
+  friends             Friendship[]          @relation("user")
+  friendWith          Friendship[]          @relation("friend")
+  post                Post[]
+  reply               Reply[]
+  like                Like[]
+  media               Media[]
+  notifcationObject   NotificationObject[]
+  notification        Notification[]
+  replyId             String?
+  postId              String?
+  mentions            Mentions[]
+  notificationSetting NotificationSetting[]
+  refreshToken        RefreshToken[]
+  emailToken          EmailToken[]
+  Message             Message[]
+  MessageStatus       MessageStatus[]
+  chat                Chat[]
+  chatUser            ChatUser[]
+  userAction          ChatActions[]         @relation("user_action")
+  authorAction        ChatActions[]         @relation("author_action")
+  assignments         Assignments[]
+  assignmentsUsers    AssignmentsUsers[]
+  assignmentsTasks    AssignmentsTasks[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
+model EmailToken {
+  id        String   @id @default(uuid())
+  userId    String   @unique @map("user_id")
+  token     String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@map("email_tokens")
+}
+
+enum ChatType {
+  PRIVATE
+  PUBLIC
+}
+
+model Chat {
+  id          String        @id @default(uuid())
+  name        String
+  ownerId     String        @map("owner_id")
+  type        ChatType      @default(PRIVATE)
+  isDirect    Boolean       @default(true) @map("is_direct")
+  icon        String?
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  owner       User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  message     Message[]
+  chatUser    ChatUser[]
+  chatActions ChatActions[]
+  assignments Assignments[]
+
+  @@map("chats")
+}
+
+model Assignments {
+  id                 String               @id @default(uuid())
+  name               String
+  ownerId            String               @map("owner_id")
+  owner              User                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  chatId             String?              @map("chat_id")
+  chat               Chat?                @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  assignmentsUsers   AssignmentsUsers[]
+  notificationObject NotificationObject[]
+  icon               String?
+  createdAt          DateTime             @default(now()) @map("created_at")
+  assignmentsTasks   AssignmentsTasks[]
+
+  @@map("assignments")
+}
+
+model AssignmentsUsers {
+  id                    String                  @id @default(uuid())
+  userId                String                  @map("user_id")
+  assignmentId          String                  @map("assignment_id")
+  isAdmin               Boolean                 @default(false) @map("is_admin")
+  createdAt             DateTime                @default(now()) @map("created_at")
+  user                  User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignment            Assignments             @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  AssignmentsTasksUsers AssignmentsTasksUsers[]
+  assignmentsTasksFiles AssignmentsTasksFiles[]
+
+  @@map("assignments_users")
+}
+
+model AssignmentsTasks {
+  id                    String                  @id @default(uuid())
+  name                  String
+  assignmentId          String                  @map("assignment_id")
+  ownerId               String                  @map("owner_id")
+  description           String?
+  createdAt             DateTime                @default(now()) @map("created_at")
+  updatedAt             DateTime                @updatedAt @map("updated_at")
+  dueDate               DateTime?               @map("due_date")
+  assignment            Assignments             @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  owner                 User                    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  assignmentsTasksUsers AssignmentsTasksUsers[]
+  assignmentsTasksFiles AssignmentsTasksFiles[]
+  NotificationObject    NotificationObject[]
+
+  @@map("assignments_tasks")
+}
+
+model AssignmentsTasksUsers {
+  id        String           @id @default(uuid())
+  taskId    String           @map("task_id")
+  userId    String           @map("user_id")
+  createdAt DateTime         @default(now()) @map("created_at")
+  completed Boolean          @default(false)
+  updatedAt DateTime         @updatedAt @map("updated_at")
+  task      AssignmentsTasks @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user      AssignmentsUsers @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("assignments_tasks_users")
+}
+
+model AssignmentsTasksFiles {
+  id        String           @id @default(uuid())
+  taskId    String           @map("task_id")
+  userId    String           @map("user_id")
+  url       String
+  filename  String
+  type      String
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+  task      AssignmentsTasks @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user      AssignmentsUsers @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("assignments_tasks_files")
+}
+
+model ChatUser {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  chatId    String   @map("chat_id")
+  isAdmin   Boolean  @default(false) @map("is_admin")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  // @@index([userId, chatId])
+  @@map("chat_users")
+}
+
+model Message {
+  id            String          @id @default(uuid())
+  userId        String          @map("user_id")
+  chatId        String?         @map("chat_id")
+  content       String?
+  hasMedia      Boolean         @default(false) @map("has_media")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  isRead        Boolean         @default(false) @map("is_read")
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messageStatus MessageStatus[]
+  chat          Chat?           @relation(fields: [chatId], references: [id])
+  media         Media[]
+
+  // @@index([chatId])
+  // @@index([userId])
+  // @@index([chatId, userId])
+  @@map("messages")
+}
+
+enum MessageStatusEnum {
+  READ
+  UNREAD
+}
+
+model MessageStatus {
+  id        String            @id @default(uuid())
+  messageId String            @map("message_id")
+  userId    String            @map("user_id")
+  status    MessageStatusEnum @default(UNREAD)
+  createdAt DateTime          @default(now()) @map("created_at")
+  updatedAt DateTime          @updatedAt @map("updated_at")
+  message   Message           @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // @@index([messageId, userId])
+  // @@index([messageId, userId, status])
+  @@map("message_status")
+}
+
+enum ChatActionsEnum {
+  JOIN
+  LEAVE
+  ADD
+  REMOVE
+  USER_ROLE_UPDATE
+  CHAT_UPDATE
+  ASSIGNMENT_LINK
+  ASSIGNMENT_UNLINK
+  CREATE
+  DELETE
+}
+
+model ChatActions {
+  id             String          @id @default(uuid())
+  chatId         String          @map("chat_id")
+  userId         String          @map("user_id")
+  action         ChatActionsEnum
+  message        String?
+  actionAuthorId String?         @map("action_author_id")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+  user           User            @relation("user_action", fields: [userId], references: [id], onDelete: Cascade)
+  chat           Chat            @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  actionAuthor   User?           @relation("author_action", fields: [actionAuthorId], references: [id], onDelete: Cascade)
+
+  @@map("chat_actions")
+}
+
+model Course {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User[]
+
+  @@map("courses")
+}
+
+model Friendship {
+  id                 String              @id @default(uuid())
+  userId             String              @map("user_id")
+  friendId           String              @map("friend_id")
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
+  accepted           Boolean             @default(false)
+  user               User                @relation(name: "user", fields: [userId], references: [id], onDelete: Cascade)
+  friend             User                @relation(name: "friend", fields: [friendId], references: [id], onDelete: Cascade)
+  notificationObject NotificationObject?
+
+  @@map("friendships")
+}
+
+model Post {
+  id                  String                @id @default(uuid())
+  userId              String                @map("user_id")
+  content             String?
+  parentId            String?               @map("parent_id")
+  createdAt           DateTime              @default(now()) @map("created_at")
+  isShared            Boolean               @default(false) @map("is_shared")
+  updatedAt           DateTime              @updatedAt @map("updated_at")
+  hasMedia            Boolean               @default(false) @map("has_media")
+  user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reply               Reply[]
+  like                Like[]
+  media               Media[]
+  parent              Post?                 @relation("posts", fields: [parentId], references: [id])
+  posts               Post[]                @relation("posts")
+  mentions            Mentions[]
+  notificationSetting NotificationSetting[]
+  notificationObject  NotificationObject[]
+
+  @@map("posts")
+}
+
+model Reply {
+  id                 String               @id @default(uuid())
+  userId             String               @map("user_id")
+  postId             String               @map("post_id")
+  parentId           String?              @map("parent_id")
+  content            String?
+  hasMedia           Boolean              @default(false) @map("has_media")
+  createdAt          DateTime             @default(now()) @map("created_at")
+  updatedAt          DateTime             @updatedAt @map("updated_at")
+  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post               Post                 @relation(fields: [postId], references: [id], onDelete: Cascade)
+  media              Media[]
+  like               Like[]
+  parent             Reply?               @relation("replies", fields: [parentId], references: [id])
+  replies            Reply[]              @relation("replies")
+  mentions           Mentions[]
+  notificationObject NotificationObject[]
+
+  @@map("replies")
+}
+
+model Mentions {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  postId    String?  @map("post_id")
+  replyId   String?  @map("reply_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  reply     Reply?   @relation(fields: [replyId], references: [id], onDelete: Cascade)
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  postId    String?  @map("post_id")
+  replyId   String?  @map("reply_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  reply     Reply?   @relation(fields: [replyId], references: [id], onDelete: Cascade)
+
+  @@map("likes")
+}
+
+model Media {
+  id        String   @id @default(uuid())
+  postId    String?  @map("post_id")
+  replyId   String?  @map("reply_id")
+  userId    String   @map("user_id")
+  messageId String?  @map("message_id")
+  url       String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  reply     Reply?   @relation(fields: [replyId], references: [id], onDelete: Cascade)
+  message   Message? @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  shareId   String?
+
+  @@map("medias")
+}
+
+model NotificationType {
+  id                Int                  @id @default(autoincrement())
+  name              String
+  defaultMessage    String?              @map("default_message")
+  notifcationObject NotificationObject[]
+
+  @@map("notification_types")
+}
+
+model NotificationObject {
+  id           String            @id @default(uuid())
+  typeId       Int               @map("type_id")
+  emitterId    String            @map("emitter")
+  message      String?
+  postId       String?           @map("post_id")
+  replyId      String?           @map("reply_id")
+  friendshipId String?           @unique @map("friendship_id")
+  assignmentId String?           @map("assignment_id")
+  taskId       String?           @map("task_id")
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+  type         NotificationType  @relation(fields: [typeId], references: [id], onDelete: Cascade)
+  emitter      User              @relation(fields: [emitterId], references: [id], onDelete: Cascade)
+  notification Notification[]
+  post         Post?             @relation(fields: [postId], references: [id], onDelete: Cascade)
+  reply        Reply?            @relation(fields: [replyId], references: [id], onDelete: Cascade)
+  friendship   Friendship?       @relation(fields: [friendshipId], references: [id], onDelete: Cascade)
+  assignment   Assignments?      @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  task         AssignmentsTasks? @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@map("notification_objects")
+}
+
+enum NotificationStatus {
+  READ
+  UNREAD
+}
+
+model Notification {
+  id                   String             @id @default(uuid())
+  receiverId           String             @map("receiver_id")
+  notificationObjectId String             @map("notification_object_id")
+  status               NotificationStatus @default(UNREAD)
+  createdAt            DateTime           @default(now()) @map("created_at")
+  updatedAt            DateTime           @updatedAt @map("updated_at")
+  receiver             User               @relation(fields: [receiverId], references: [id])
+  notificationObject   NotificationObject @relation(fields: [notificationObjectId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model NotificationSetting {
+  id      String  @id @default(uuid())
+  userId  String  @map("user_id")
+  postId  String  @map("post_id")
+  enabled Boolean @default(true)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post    Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@map("notification_settings")
+}

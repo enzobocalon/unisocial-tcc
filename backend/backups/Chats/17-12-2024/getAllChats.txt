@@ -1,0 +1,82 @@
+QUERY ORIGINAL
+
+SELECT 
+          c.*, 
+          m.id as message_id,
+          m.user_id as message_user_id,
+          m.chat_id as message_chat_id,
+          m.content as message_content,
+          m.has_media as message_has_media,
+          m.created_at as message_created_at,
+          ca.id as action_id,
+          ca.chat_id as action_chat_id,
+          ca.action as action_action,
+          ca.user_id as action_user_id,
+          ca.message as action_message,
+          ca.created_at as action_created_at,
+          action_author.id AS action_author_id,
+          action_author.name AS action_author_name,
+          action_author.username AS action_author_username,
+          action_author.avatar AS action_author_avatar,
+          u.id AS message_user_id,
+          u.name AS message_user_name,
+          u.username AS message_user_username,
+          u.avatar AS message_user_avatar,
+          action_user.id AS action_user_id,
+          action_user.name AS action_user_name,
+          action_user.username AS action_user_username,
+          action_user.avatar AS action_user_avatar,
+          COALESCE(unread_messages.unread_count, 0) AS unread_message_count
+      FROM 
+          chats c
+      LEFT JOIN (
+          SELECT 
+              m.*, 
+              ROW_NUMBER() OVER (PARTITION BY m.chat_id ORDER BY m.created_at DESC) as seqnum
+          FROM 
+              messages m
+      ) m ON c.id = m.chat_id AND m.seqnum = 1
+      LEFT JOIN (
+          SELECT 
+              ca.*, 
+              ROW_NUMBER() OVER (PARTITION BY ca.chat_id ORDER BY ca.created_at DESC) as seqnum2
+          FROM 
+              chat_actions ca
+      ) ca ON c.id = ca.chat_id AND ca.seqnum2 = 1
+      LEFT JOIN 
+          users AS action_author ON action_author.id = ca.action_author_id
+      LEFT JOIN 
+          users AS u ON u.id = m.user_id
+      LEFT JOIN 
+          users AS action_user ON action_user.id = ca.user_id
+      LEFT JOIN LATERAL (
+          SELECT 
+              m.chat_id,
+              COUNT(ms.message_id) AS unread_count
+          FROM 
+              messages m
+          LEFT JOIN 
+              message_status ms ON m.id = ms.message_id AND ms.status = 'UNREAD' AND ms.user_id = ${userId}
+          WHERE 
+              m.chat_id = c.id
+          GROUP BY 
+              m.chat_id
+      ) AS unread_messages ON TRUE
+      WHERE 
+          EXISTS (
+              SELECT 
+                  1
+              FROM 
+                  chat_users cu
+              WHERE 
+                  cu.chat_id = c.id
+              AND 
+                  cu.user_id = ${userId}
+          )
+      ORDER BY 
+          CASE
+              WHEN m.chat_id IS NOT NULL THEN 1  -- Chats with messages
+              ELSE 2  -- Chats without messages
+          END,
+          COALESCE(m.created_at, ca.created_at) DESC
+      LIMIT ${PAGE_SIZE} OFFSET ${page * PAGE_SIZE};
